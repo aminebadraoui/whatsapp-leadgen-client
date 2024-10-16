@@ -22,7 +22,7 @@ jobs:
         context: .
         file: ./Dockerfile.prod
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/mnfst-starter-client:prod
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/whatsapp-leadgen-client:prod
         build-args: |
           REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}
 
@@ -32,4 +32,4 @@ jobs:
         context: .
         file: ./Dockerfile.dev
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/mnfst-starter-client:dev
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/whatsapp-leadgen-client:dev
