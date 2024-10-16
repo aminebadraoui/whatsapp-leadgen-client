@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import AddBucketModal from './AddBucketModal';
+import BucketContacts from './BucketContacts';
 
 const LeadBuckets = () => {
     const [buckets, setBuckets] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedBucket, setSelectedBucket] = useState(null);
 
     useEffect(() => {
         fetchBuckets();
@@ -55,40 +57,45 @@ const LeadBuckets = () => {
 
     return (
         <div>
-            <h2 className="text-2xl font-bold mb-4">Lead Buckets</h2>
-            <motion.button
-                className="bg-green-500 text-white px-4 py-2 rounded mb-4"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsModalOpen(true)}
-            >
-                Add Bucket
-            </motion.button>
-            {buckets.length === 0 ? (
-                <p>No buckets found. Create a new bucket to get started.</p>
+            {selectedBucket ? (
+                <BucketContacts bucket={selectedBucket} onBack={() => setSelectedBucket(null)} />
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {buckets.map((bucket) => (
-                        <motion.div
-                            key={bucket.id}
-                            className="bg-white p-4 rounded shadow"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            <h3 className="text-lg font-semibold">{bucket.name}</h3>
-                            <p>{bucket.contacts?.length || 0} contacts</p>
-                        </motion.div>
-                    ))}
-                </div>
+                <>
+                    <h2 className="text-2xl font-bold mb-4">Lead Buckets</h2>
+                    <motion.button
+                        className="bg-green-500 text-white px-4 py-2 rounded mb-4"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setIsModalOpen(true)}
+                    >
+                        Add Bucket
+                    </motion.button>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                        {buckets.map((bucket) => (
+                            <motion.div
+                                key={bucket.id}
+                                className="bg-white p-4 rounded shadow cursor-pointer"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3 }}
+                                onClick={() => setSelectedBucket(bucket)}
+                            >
+                                <h3 className="text-lg font-semibold">{bucket.name}</h3>
+                                <p>{bucket.contacts.length} contacts</p>
+                            </motion.div>
+                        ))}
+                    </div>
+                    <AddBucketModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        onAdd={addBucket}
+                    />
+                </>
             )}
-            <AddBucketModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onAdd={addBucket}
-            />
         </div>
     );
+
+
 };
 
 export default LeadBuckets;
