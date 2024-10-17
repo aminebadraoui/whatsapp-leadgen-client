@@ -18,7 +18,7 @@ const LeadBuckets = () => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await fetch('http://localhost:5000/api/buckets');
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/buckets`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -34,7 +34,7 @@ const LeadBuckets = () => {
 
     const addBucket = async (name) => {
         try {
-            const response = await fetch('http://localhost:5000/api/buckets', {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/buckets`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name }),

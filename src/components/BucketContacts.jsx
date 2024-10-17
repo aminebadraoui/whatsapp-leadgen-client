@@ -17,7 +17,7 @@ const BucketContacts = ({ bucket, onBack }) => {
 
     const fetchBucketContacts = async () => {
         try {
-            const response = await fetch(`http://localhost:5000/api/buckets/${bucket.id}/contacts`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/buckets/${bucket.id}/contacts`);
             const data = await response.json();
             setContacts(data);
         } catch (error) {
@@ -48,7 +48,7 @@ const BucketContacts = ({ bucket, onBack }) => {
             await new Promise(resolve => setTimeout(resolve, 300));
 
             try {
-                const response = await fetch('http://localhost:5000/api/send-message', {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/send-message`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contactId: contact.id, message: messageTemplate.message }),
