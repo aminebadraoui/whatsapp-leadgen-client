@@ -20,7 +20,9 @@ const WhatsAppGroupContacts = ({ group, onBack }) => {
     };
 
     useEffect(() => {
-        socketRef.current = new WebSocket(getWebSocketUrl());
+        const wsUrl = `ws://0.0.0.0:${process.env.WS_PORT || 5000}/ws`;
+        console.log('WebSocket URL:', wsUrl);
+        socketRef.current = new WebSocket(wsUrl);
 
         socketRef.current.onopen = () => {
             console.log('WebSocket connection established');

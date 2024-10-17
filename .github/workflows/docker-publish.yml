@@ -25,6 +25,7 @@ jobs:
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/whatsapp-leadgen-client:prod
         build-args: |
           REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}
+          WS_PORT=${{ secrets.WS_PORT }}
 
     - name: Build and push development Docker image
       uses: docker/build-push-action@v4
