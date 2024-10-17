@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FaArrowLeft, FaSearch } from 'react-icons/fa';
 import SendMessageModal from './SendMessageModal';
+import SendMessageProgress from './SendMessageProgress';
 
 const BucketContacts = ({ bucket, onBack }) => {
     const [contacts, setContacts] = useState([]);
     const [selectedContacts, setSelectedContacts] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [isSendMessageModalOpen, setIsSendMessageModalOpen] = useState(false);
+    const [sendingProgress, setSendingProgress] = useState(null);
 
     useEffect(() => {
         fetchBucketContacts();
@@ -36,8 +38,49 @@ const BucketContacts = ({ bucket, onBack }) => {
         contact.phoneNumber.includes(searchTerm)
     );
 
+    const handleSendMessage = async (messageTemplate) => {
+        console.log("messageTemplate", messageTemplate);
+        setSendingProgress({ total: selectedContacts.length, current: 0, completed: [] });
+        for (let i = 0; i < selectedContacts.length; i++) {
+            const contact = contacts.find(c => c.id === selectedContacts[i]);
+            const delay = Math.floor(Math.random() * (120000 - 60000 + 1) + 60000);
+            console.log('Delay:', delay); // Random delay between 1-2 minutes
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            try {
+                const response = await fetch('http://localhost:5000/api/send-message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contactId: contact.id, message: messageTemplate.message }),
+                });
+
+                const result = await response.json();
+                console.log('Result:', result);
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Failed to send message');
+                }
+
+                console.log(`Message sent successfully to ${contact.name}: ${result.messageId}`);
+
+                setSendingProgress(prev => ({
+                    ...prev,
+                    current: i + 1,
+                    completed: [...prev.completed, { contact, success: true }],
+                }));
+            } catch (error) {
+                console.error(`Error sending message to ${contact.name}:`, error);
+                setSendingProgress(prev => ({
+                    ...prev,
+                    current: i + 1,
+                    completed: [...prev.completed, { contact, success: false, error: error.message }],
+                }));
+            }
+        }
+    };
+
     return (
-        <div>
+        <div className="p-6">
             <motion.button
                 className="bg-green-500 text-white px-4 py-2 rounded mb-4 flex items-center"
                 whileHover={{ scale: 1.05 }}
@@ -81,14 +124,14 @@ const BucketContacts = ({ bucket, onBack }) => {
                     onClick={() => setIsSendMessageModalOpen(true)}
                     disabled={selectedContacts.length === 0}
                 >
-                    Send New Message
+                    Send Message
                 </motion.button>
             </div>
-            <ul>
+            <ul className="space-y-2">
                 {filteredContacts.map((contact) => (
                     <motion.li
                         key={contact.id}
-                        className="flex items-center bg-white p-2 mb-2 rounded"
+                        className="flex items-center bg-white p-2 rounded shadow"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3 }}
@@ -106,11 +149,11 @@ const BucketContacts = ({ bucket, onBack }) => {
             <SendMessageModal
                 isOpen={isSendMessageModalOpen}
                 onClose={() => setIsSendMessageModalOpen(false)}
-                onSend={(messageId) => {
-                    // Implement send message functionality
-                    console.log('Sending message:', messageId, 'to contacts:', selectedContacts);
-                }}
+                onSend={handleSendMessage}
             />
+            {sendingProgress && (
+                <SendMessageProgress progress={sendingProgress} />
+            )}
         </div>
     );
 };

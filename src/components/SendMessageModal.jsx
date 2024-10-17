@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const SendMessageModal = ({ isOpen, onClose, onSend }) => {
     const [messageTemplates, setMessageTemplates] = useState([]);
-    const [selectedTemplate, setSelectedTemplate] = useState('');
+    const [selectedTemplate, setSelectedTemplate] = useState(null);
 
     useEffect(() => {
         fetchMessageTemplates();
@@ -13,6 +13,7 @@ const SendMessageModal = ({ isOpen, onClose, onSend }) => {
         try {
             const response = await fetch('http://localhost:5000/api/message-templates');
             const data = await response.json();
+            console.log('Fetched message templates:', data);
             setMessageTemplates(data);
         } catch (error) {
             console.error('Error fetching message templates:', error);
@@ -43,14 +44,14 @@ const SendMessageModal = ({ isOpen, onClose, onSend }) => {
                     >
                         <h2 className="text-2xl font-bold mb-4">Send Message</h2>
                         <select
-                            value={selectedTemplate}
-                            onChange={(e) => setSelectedTemplate(e.target.value)}
+                            value={selectedTemplate ? selectedTemplate.id : ""}
+                            onChange={(e) => setSelectedTemplate(messageTemplates.find(t => t.id === e.target.value))}
                             className="w-full p-2 border rounded mb-4"
                         >
                             <option value="">Select a message template</option>
                             {messageTemplates.map((template) => (
                                 <option key={template.id} value={template.id}>
-                                    {template.name}
+                                    {template.title}
                                 </option>
                             ))}
                         </select>

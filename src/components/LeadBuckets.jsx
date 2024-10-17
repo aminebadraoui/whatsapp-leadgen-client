@@ -6,25 +6,27 @@ import BucketContacts from './BucketContacts';
 const LeadBuckets = () => {
     const [buckets, setBuckets] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedBucket, setSelectedBucket] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [selectedBucket, setSelectedBucket] = useState(null);
 
     useEffect(() => {
         fetchBuckets();
     }, []);
 
     const fetchBuckets = async () => {
+        setIsLoading(true);
+        setError(null);
         try {
-            setIsLoading(true);
             const response = await fetch('http://localhost:5000/api/buckets');
             if (!response.ok) {
-                throw new Error('Failed to fetch buckets');
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
             setBuckets(Array.isArray(data) ? data : []);
-        } catch (err) {
-            setError(err.message);
+        } catch (error) {
+            console.error('Error fetching buckets:', error);
+            setError('Failed to fetch buckets. Please try again later.');
         } finally {
             setIsLoading(false);
         }
@@ -38,12 +40,13 @@ const LeadBuckets = () => {
                 body: JSON.stringify({ name }),
             });
             if (!response.ok) {
-                throw new Error('Failed to add bucket');
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             const newBucket = await response.json();
             setBuckets(prevBuckets => [...prevBuckets, newBucket]);
-        } catch (err) {
-            setError(err.message);
+        } catch (error) {
+            console.error('Error adding bucket:', error);
+            setError('Failed to add bucket. Please try again.');
         }
     };
 
@@ -70,21 +73,25 @@ const LeadBuckets = () => {
                     >
                         Add Bucket
                     </motion.button>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                        {buckets.map((bucket) => (
-                            <motion.div
-                                key={bucket.id}
-                                className="bg-white p-4 rounded shadow cursor-pointer"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.3 }}
-                                onClick={() => setSelectedBucket(bucket)}
-                            >
-                                <h3 className="text-lg font-semibold">{bucket.name}</h3>
-                                <p>{bucket.contacts.length} contacts</p>
-                            </motion.div>
-                        ))}
-                    </div>
+                    {buckets.length === 0 ? (
+                        <p>No buckets found. Create a new bucket to get started.</p>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            {buckets.map((bucket) => (
+                                <motion.div
+                                    key={bucket.id}
+                                    className="bg-white p-4 rounded shadow cursor-pointer"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                    onClick={() => setSelectedBucket(bucket)}
+                                >
+                                    <h3 className="text-lg font-semibold">{bucket.name}</h3>
+                                    <p>{bucket.contacts?.length || 0} contacts</p>
+                                </motion.div>
+                            ))}
+                        </div>
+                    )}
                     <AddBucketModal
                         isOpen={isModalOpen}
                         onClose={() => setIsModalOpen(false)}
@@ -94,8 +101,6 @@ const LeadBuckets = () => {
             )}
         </div>
     );
-
-
 };
 
 export default LeadBuckets;
