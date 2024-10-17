@@ -6,17 +6,11 @@ const WhatsAppAuth = ({ onAuthenticated }) => {
     const [status, setStatus] = useState('Connecting to server...');
     const [reconnectAttempts, setReconnectAttempts] = useState(0);
 
-    const getWebSocketUrl = () => {
-        if (process.env.NODE_ENV === 'production') {
-            return 'wss://leadchatapp.com/ws';
-        } else {
-            return 'ws://0.0.0.0:5000/ws';
-        }
-    };
+
 
     const connect = useCallback(() => {
         console.log('Attempting to connect to WebSocket...');
-        const wsUrl = `ws://0.0.0.0:${process.env.WS_PORT || 5000}/ws`;
+        const wsUrl = `ws://0.0.0.0:${process.env.WS_PORT}/ws`;
         console.log('WebSocket URL:', wsUrl);
         const ws = new WebSocket(wsUrl);
 

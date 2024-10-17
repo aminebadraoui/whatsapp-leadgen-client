@@ -11,16 +11,10 @@ const WhatsAppGroupContacts = ({ group, onBack }) => {
     const [isExportModalOpen, setIsExportModalOpen] = useState(false);
     const socketRef = useRef(null);
 
-    const getWebSocketUrl = () => {
-        if (process.env.NODE_ENV === 'production') {
-            return 'wss://leadchatapp.com/ws';
-        } else {
-            return 'ws://localhost:5000/ws';
-        }
-    };
+
 
     useEffect(() => {
-        const wsUrl = `ws://0.0.0.0:${process.env.WS_PORT || 5000}/ws`;
+        const wsUrl = `ws://0.0.0.0:${process.env.WS_PORT}/ws`;
         console.log('WebSocket URL:', wsUrl);
         socketRef.current = new WebSocket(wsUrl);
 
