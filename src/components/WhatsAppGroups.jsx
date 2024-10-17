@@ -8,9 +8,16 @@ const WhatsAppGroups = () => {
     const socketRef = useRef(null);
 
 
+    const getWebSocketUrl = () => {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const host = "ws://0.0.0.0"
+        const port = process.env.REACT_APP_WS_PORT || '5006';
+        return `${protocol}//${host}:${port}/ws`;
+    };
+
 
     useEffect(() => {
-        const wsUrl = `ws://0.0.0.0:5006/ws`;
+        const wsUrl = getWebSocketUrl();
         console.log('WebSocket URL:', wsUrl);
 
         socketRef.current = new WebSocket(wsUrl);
