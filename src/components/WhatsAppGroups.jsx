@@ -8,7 +8,7 @@ const WhatsAppGroups = () => {
     const socketRef = useRef(null);
 
     useEffect(() => {
-        socketRef.current = new WebSocket('ws://localhost:5000/ws');
+        socketRef.current = new WebSocket(`ws://${process.env.REACT_APP_API_URL}/ws`);
 
         socketRef.current.onopen = () => {
             console.log('WebSocket connection established');

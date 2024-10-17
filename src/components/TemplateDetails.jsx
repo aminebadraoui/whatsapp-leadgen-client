@@ -8,7 +8,7 @@ const TemplateDetails = ({ template, onBack, onUpdate, onDelete }) => {
 
     const handleUpdate = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/message-templates/${template.id}`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/message-templates/${template.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, message }),
@@ -23,7 +23,7 @@ const TemplateDetails = ({ template, onBack, onUpdate, onDelete }) => {
     const handleDelete = async () => {
         if (window.confirm('Are you sure you want to delete this template?')) {
             try {
-                await fetch(`${process.env.REACT_APP_API_URL}/message-templates/${template.id}`, {
+                await fetch(`${process.env.REACT_APP_API_URL}/api/message-templates/${template.id}`, {
                     method: 'DELETE',
                 });
                 onDelete(template.id);

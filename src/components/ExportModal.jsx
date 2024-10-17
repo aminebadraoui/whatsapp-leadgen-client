@@ -11,7 +11,7 @@ const ExportModal = ({ isOpen, onClose, onExport, selectedContacts, group }) => 
 
     const fetchBuckets = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/buckets`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/buckets`);
             const data = await response.json();
             setBuckets(data);
         } catch (error) {

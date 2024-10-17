@@ -18,7 +18,7 @@ const MessageTemplates = () => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/message-templates`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/message-templates`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -34,7 +34,7 @@ const MessageTemplates = () => {
 
     const addTemplate = async (title, message) => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/message-templates`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/message-templates`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, message }),

@@ -8,7 +8,7 @@ const WhatsAppAuth = ({ onAuthenticated }) => {
 
     const connect = useCallback(() => {
         console.log('Attempting to connect to WebSocket...');
-        const ws = new WebSocket('ws://localhost:5000/ws');
+        const ws = new WebSocket(`ws://${process.env.REACT_APP_API_URL}/ws`);
 
         ws.onopen = () => {
             console.log('WebSocket connection established');
