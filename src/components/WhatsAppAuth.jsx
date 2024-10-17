@@ -7,10 +7,9 @@ const WhatsAppAuth = ({ onAuthenticated }) => {
     const [reconnectAttempts, setReconnectAttempts] = useState(0);
 
 
-
     const connect = useCallback(() => {
         console.log('Attempting to connect to WebSocket...');
-        const wsUrl = `ws://0.0.0.0:${process.env.WS_PORT}/ws`;
+        const wsUrl = `ws://0.0.0.0:5006/ws`;
         console.log('WebSocket URL:', wsUrl);
         const ws = new WebSocket(wsUrl);
 

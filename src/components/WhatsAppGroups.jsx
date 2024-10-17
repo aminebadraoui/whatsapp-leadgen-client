@@ -10,7 +10,7 @@ const WhatsAppGroups = () => {
 
 
     useEffect(() => {
-        const wsUrl = `ws://0.0.0.0:${process.env.WS_PORT}/ws`;
+        const wsUrl = `ws://0.0.0.0:5006/ws`;
         console.log('WebSocket URL:', wsUrl);
 
         socketRef.current = new WebSocket(wsUrl);
