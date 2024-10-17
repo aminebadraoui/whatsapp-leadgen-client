@@ -10,7 +10,7 @@ const WhatsAppGroups = () => {
 
     const getWebSocketUrl = () => {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const host = "ws://0.0.0.0"
+        const host = "0.0.0.0"
         const port = process.env.REACT_APP_WS_PORT || '5006';
         return `${protocol}//${host}:${port}/ws`;
     };
