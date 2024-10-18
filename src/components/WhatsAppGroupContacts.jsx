@@ -15,7 +15,7 @@ const WhatsAppGroupContacts = ({ group, onBack }) => {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const host = window.location.hostname;
         const port = process.env.REACT_APP_WS_PORT || '5006';
-        return `${protocol}//${host}:${port}/ws`;
+        return `${protocol}//${host}:${port}`;
     };
 
 
