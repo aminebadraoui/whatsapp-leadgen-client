@@ -58,7 +58,7 @@ const WhatsAppGroupContacts = ({ group, onBack }) => {
 
     const handleExport = async (bucketId, selectedContacts, group) => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/api/export`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/export`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
