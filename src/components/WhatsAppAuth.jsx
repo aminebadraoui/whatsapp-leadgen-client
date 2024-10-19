@@ -28,6 +28,10 @@ const WhatsAppAuth = () => {
                     setStatus('Authenticated successfully!');
                     setTimeout(() => navigate('/dashboard'), 2000); // Navigate after 2 seconds
                 }
+                else if (data.type === 'whatsapp_ready') {
+                    setStatus('Authenticated successfully!');
+                    setTimeout(() => navigate('/dashboard'), 2000); // Navigate after 2 seconds
+                }
             } catch (error) {
                 console.error('Error parsing WebSocket message:', error);
             }
