@@ -1,23 +1,16 @@
-import React, { useState } from 'react';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import WhatsAppAuth from './components/WhatsAppAuth';
 import Dashboard from './components/Dashboard';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  const handleAuthenticated = () => {
-    setIsAuthenticated(true);
-  };
-
   return (
-    <div className="App">
-      {!isAuthenticated ? (
-        <WhatsAppAuth onAuthenticated={handleAuthenticated} />
-      ) : (
-        <Dashboard />
-      )}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<WhatsAppAuth />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </Router>
   );
 }
 
