@@ -9,6 +9,7 @@ const WhatsAppAuth = () => {
 
     useEffect(() => {
         console.log('Attempting to connect to WebSocket...');
+        console.log(process.env.REACT_APP_WS_URL);
         const ws = new WebSocket(process.env.REACT_APP_WS_URL);
 
         ws.onopen = () => {
