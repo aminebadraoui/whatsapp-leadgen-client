@@ -27,7 +27,15 @@ const WhatsAppGroupContacts = ({ group, onBack }) => {
         socketRef.current.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.action === 'groupMembersReceived') {
-                setContacts(data.members);
+                console.log("groupMembersReceived", data.members);
+                console.log("groupMembersReceived", data.totalMembers);
+
+                if (data.members) {
+                    setContacts(data.members);
+                } else {
+                    console.error("No members received");
+                    setContacts([]);
+                }
             }
         };
 
