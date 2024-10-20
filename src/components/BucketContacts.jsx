@@ -42,42 +42,78 @@ const BucketContacts = ({ bucket, onBack }) => {
     const handleSendMessage = async (messageTemplate) => {
         console.log("messageTemplate", messageTemplate);
         setSendingProgress({ total: selectedContacts.length, current: 0, completed: [] });
-        for (let i = 0; i < selectedContacts.length; i++) {
-            const contact = contacts.find(c => c.id === selectedContacts[i]);
-            const delay = Math.floor(Math.random() * (120000 - 60000 + 1) + 60000);
-            console.log('Delay:', delay); // Random delay between 1-2 minutes
-            await new Promise(resolve => setTimeout(resolve, 300));
 
-            try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/send-message`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contactId: contact.id, message: messageTemplate.message }),
+        const wsUrl = process.env.REACT_APP_WS_URL;
+        const ws = new WebSocket(wsUrl);
+
+        ws.onopen = () => {
+            console.log('WebSocket connection established for sending messages');
+            sendNextMessage(0);
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.action === 'messageSent') {
+                console.log(`Message sent successfully to ${data.contactId}: ${data.messageId}`);
+                setSendingProgress((prev) => {
+                    const newProgress = {
+                        ...prev,
+                        current: prev.current + 1,
+                        completed: [...prev.completed, { contact: contacts.find(c => c.id === data.contactId), success: true }],
+                    };
+                    sendNextMessage(newProgress.current);
+                    return newProgress;
                 });
-
-                const result = await response.json();
-                console.log('Result:', result);
-
-                if (!response.ok) {
-                    throw new Error(result.error || 'Failed to send message');
-                }
-
-                console.log(`Message sent successfully to ${contact.name}: ${result.messageId}`);
-
-                setSendingProgress(prev => ({
-                    ...prev,
-                    current: i + 1,
-                    completed: [...prev.completed, { contact, success: true }],
-                }));
-            } catch (error) {
-                console.error(`Error sending message to ${contact.name}:`, error);
-                setSendingProgress(prev => ({
-                    ...prev,
-                    current: i + 1,
-                    completed: [...prev.completed, { contact, success: false, error: error.message }],
-                }));
+            } else if (data.action === 'error') {
+                console.error(`Error sending message to ${data.contactId}:`, data.message);
+                setSendingProgress((prev) => {
+                    const newProgress = {
+                        ...prev,
+                        current: prev.current + 1,
+                        completed: [...prev.completed, { contact: contacts.find(c => c.id === data.contactId), success: false, error: data.message }],
+                    };
+                    sendNextMessage(newProgress.current);
+                    return newProgress;
+                });
             }
-        }
+        };
+
+        const sendNextMessage = (index) => {
+            if (index < selectedContacts.length) {
+                const contact = contacts.find(c => c.id === selectedContacts[index]);
+
+                console.log("contact", contact);
+                const delay = Math.floor(Math.random() * (60000 - 30000 + 1) + 30000);
+                console.log('Delay:', delay);
+                setTimeout(() => {
+                    ws.send(JSON.stringify({
+                        action: 'sendMessage',
+                        contactId: contact.id,
+                        phoneNumber: contact.phoneNumber,
+                        message: messageTemplate.message
+                    }));
+                }, delay);
+            } else {
+                ws.close();
+            }
+        };
+
+        ws.onerror = (error) => {
+            console.error('WebSocket error:', error);
+            setSendingProgress((prev) => {
+                const newProgress = {
+                    ...prev,
+                    current: prev.current + 1,
+                    completed: [...prev.completed, { contact: contacts[prev.current], success: false, error: 'WebSocket error' }],
+                };
+                sendNextMessage(newProgress.current);
+                return newProgress;
+            });
+        };
+
+        ws.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
     };
 
     return (
