@@ -11,7 +11,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'primary': colors.cyan,
+        primary: {
+          50: '#e6f7f3',
+          100: '#ccefe7',
+          200: '#99dfcf',
+          300: '#66cfb7',
+          400: '#33bf9f',
+          500: '#09a784',
+          600: '#07866a',
+          700: '#05644f',
+          800: '#044335',
+          900: '#02211a',
+        },
       },
     },
   },
