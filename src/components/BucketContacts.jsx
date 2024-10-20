@@ -17,6 +17,7 @@ const BucketContacts = ({ bucket, onBack }) => {
 
     const fetchBucketContacts = async () => {
         try {
+            console.log("fetching bucket contacts", `${process.env.REACT_APP_API_URL}/buckets/${bucket.id}/contacts`);
             const response = await fetch(`${process.env.REACT_APP_API_URL}/buckets/${bucket.id}/contacts`);
             const data = await response.json();
             setContacts(data);

@@ -18,6 +18,7 @@ const LeadBuckets = () => {
         setIsLoading(true);
         setError(null);
         try {
+            console.log("fetching buckets", `${process.env.REACT_APP_API_URL}/buckets`);
             const response = await fetch(`${process.env.REACT_APP_API_URL}/buckets`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
