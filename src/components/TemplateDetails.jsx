@@ -36,7 +36,7 @@ const TemplateDetails = ({ template, onBack, onUpdate, onDelete }) => {
     return (
         <div>
             <motion.button
-                className="bg-green-500 text-white px-4 py-2 rounded mb-4 flex items-center"
+                className="bg-primary-500 text-white px-4 py-2 rounded mb-4 flex items-center"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onBack}

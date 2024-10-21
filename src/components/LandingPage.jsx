@@ -2,6 +2,9 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaClipboardList, FaWhatsapp, FaRocket, FaCheck, FaRandom } from 'react-icons/fa';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
 const LandingPage = () => {
     const pricingRef = useRef(null);
@@ -169,37 +172,76 @@ const Pricing = React.forwardRef((props, ref) => (
             </motion.h2>
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 <PricingCard
-                    title="Limited Offer"
-                    originalPrice="$20"
-                    discountedPrice="$10"
-                    features={[
-                        "One list",
-                        "One message template",
-                        "Limited to 100 people per list",
-                        "Perfect for trying out the app"
-                    ]}
-                    delay={0.2}
-                />
-                <PricingCard
                     title="Lifetime Offer"
-                    originalPrice="$200"
-                    discountedPrice="$100"
+                    originalPrice="$600"
+                    discountedPrice="$299"
                     features={[
-                        "Unlimited lists",
+                        "Unlimited lead buckets",
+                        "No lead bucket size limits",
                         "Unlimited message templates",
-                        "No list size limits",
                         "Lifetime updates"
                     ]}
                     highlighted={true}
                     delay={0.4}
+                    priceId="price_1QC9ueDLt2qCPKSrCUNf8ggh"
                 />
+                <PricingCard
+                    title="Limited Offer"
+                    originalPrice="$40"
+                    discountedPrice="$19"
+                    features={[
+                        "One lead bucket",
+                        "Limited to 50 contacts per lead bucket",
+                        "One message template",
+                        "Perfect for trying out the app"
+                    ]}
+                    delay={0.2}
+                    priceId="price_1QC9uFDLt2qCPKSrQY7mkijU"
+                />
+
             </div>
         </div>
     </section>
 ));
 
-const PricingCard = ({ title, originalPrice, discountedPrice, features, highlighted = false, delay }) => (
-    <motion.div
+const PricingCard = ({ title, originalPrice, discountedPrice, features, highlighted = false, delay, priceId }) => {
+
+    const handleGetStarted = async () => {
+        try {
+            const stripe = await stripePromise;
+            const response = await fetch('http://localhost:5000/api/stripe/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ priceId }), // Changed from productId to priceId
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to create checkout session');
+            }
+
+            const session = await response.json();
+
+            if (!session.id) {
+                throw new Error('Invalid session ID received from server');
+            }
+
+            const result = await stripe.redirectToCheckout({
+                sessionId: session.id,
+            });
+
+            if (result.error) {
+                throw new Error(result.error.message);
+            }
+        } catch (error) {
+            console.error('Error:', error.message);
+            // Here you might want to show an error message to the user
+        }
+    };
+
+    return (<motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay }}
@@ -221,11 +263,14 @@ const PricingCard = ({ title, originalPrice, discountedPrice, features, highligh
                 </li>
             ))}
         </ul>
-        <button className={`mt-auto py-2 px-4 rounded-full font-semibold ${highlighted ? 'bg-primary-600 text-white hover:bg-primary-700' : 'bg-primary-100 text-primary-800 hover:bg-primary-200'} transition-colors`}>
+        <button
+            onClick={handleGetStarted}
+            className={`mt-auto py-2 px-4 rounded-full font-semibold ${highlighted ? 'bg-primary-600 text-white hover:bg-primary-700' : 'bg-primary-100 text-primary-800 hover:bg-primary-200'} transition-colors`}>
             Get Started
         </button>
     </motion.div>
-);
+    );
+};
 
 const Footer = () => (
     <footer className="bg-primary-600 text-white py-8">

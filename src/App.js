@@ -4,56 +4,36 @@ import LandingPage from './components/LandingPage';
 import Login from './components/Login';
 import WhatsAppAuth from './components/WhatsAppAuth';
 import Dashboard from './components/Dashboard';
+import Success from './components/Success';
+import AuthPage from './components/AuthPage';
+import useUserStore from './stores/userStore';
 
 const App = () => {
-  const [user, setUser] = useState(null);
-  const [isWhatsAppAuthenticated, setIsWhatsAppAuthenticated] = useState(false);
+  const userStore = useUserStore();
+  const { user, setUser } = userStore;
+
+  const initializeUser = useUserStore(state => state.initializeUser);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const whatsappAuth = localStorage.getItem('whatsappAuthenticated');
-    if (token) {
-      // Verify token with the server and set user
-      // This is a placeholder and should be implemented
-      // setUser({ id: '1', email: 'user@example.com' });
-    }
-    if (whatsappAuth === 'true') {
-      setIsWhatsAppAuthenticated(true);
-    }
-  }, []);
-
-  const handleWhatsAppAuth = () => {
-    setIsWhatsAppAuthenticated(true);
-    localStorage.setItem('whatsappAuthenticated', 'true');
-  };
+    initializeUser();
+  }, [initializeUser]);
 
   return (
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+
+        <Route path="/success" element={<Success />} />
+        <Route path="/auth" element={<AuthPage />} />
+
         <Route
           path="/access"
-          element={user ? <Navigate to="/whatsapp-auth" /> : <Login />}
+          element={user ? <Navigate to="/dashboard" /> : <Login />}
         />
-        <Route
-          path="/whatsapp-auth"
-          element={
-            user ? (
-              <WhatsAppAuth onAuthenticated={handleWhatsAppAuth} />
-            ) : (
-              <Navigate to="/access" />
-            )
-          }
-        />
+
         <Route
           path="/dashboard"
-          element={
-            user && isWhatsAppAuthenticated ? (
-              <Dashboard user={user} />
-            ) : (
-              <Navigate to={user ? '/whatsapp-auth' : '/access'} />
-            )
-          }
+          element={user ? <Dashboard user={user} /> : <Navigate to={'/access'} />}
         />
       </Routes>
     </Router>

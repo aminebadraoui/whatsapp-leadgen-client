@@ -67,7 +67,7 @@ const LeadBuckets = () => {
                 <>
                     <h2 className="text-2xl font-bold mb-4">Lead Buckets</h2>
                     <motion.button
-                        className="bg-green-500 text-white px-4 py-2 rounded mb-4"
+                        className="bg-primary-500 text-white px-4 py-2 rounded mb-4"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setIsModalOpen(true)}

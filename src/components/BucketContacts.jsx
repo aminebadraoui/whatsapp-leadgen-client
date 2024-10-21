@@ -119,7 +119,7 @@ const BucketContacts = ({ bucket, onBack }) => {
     return (
         <div className="p-6">
             <motion.button
-                className="bg-green-500 text-white px-4 py-2 rounded mb-4 flex items-center"
+                className="bg-primary-500 text-white px-4 py-2 rounded mb-4 flex items-center"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onBack}
@@ -155,7 +155,7 @@ const BucketContacts = ({ bucket, onBack }) => {
                     Deselect All
                 </motion.button>
                 <motion.button
-                    className="bg-green-500 text-white px-4 py-2 rounded"
+                    className="bg-primary-500 text-white px-4 py-2 rounded"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsSendMessageModalOpen(true)}

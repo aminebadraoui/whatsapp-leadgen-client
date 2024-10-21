@@ -16,7 +16,7 @@ const SendMessageProgress = ({ progress }) => {
             <div className="mb-2">
                 <div className="bg-gray-200 rounded-full h-4">
                     <motion.div
-                        className="bg-green-500 h-4 rounded-full"
+                        className="bg-primary-500 h-4 rounded-full"
                         initial={{ width: 0 }}
                         animate={{ width: `${(current / total) * 100}%` }}
                         transition={{ duration: 0.5 }}
@@ -36,7 +36,7 @@ const SendMessageProgress = ({ progress }) => {
                         transition={{ duration: 0.3 }}
                     >
                         {item.success ? (
-                            <FaCheckCircle className="text-green-500 mr-2" />
+                            <FaCheckCircle className="text-primary-500 mr-2" />
                         ) : (
                             <FaTimesCircle className="text-red-500 mr-2" />
                         )}
