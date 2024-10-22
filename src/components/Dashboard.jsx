@@ -25,6 +25,8 @@ const Dashboard = () => {
         }
     }, [user, connect]);
 
+    const [qrCode, setQrCode] = useState('');
+
     useEffect(() => {
         if (socket) {
             socket.onopen = () => {
@@ -50,6 +52,12 @@ const Dashboard = () => {
                     if (data.type === 'disconnected') {
                         setClientReady(false);
                     }
+
+                    if (data.type === 'qr') {
+                        setQrCode(data.qr);
+                    }
+
+
                 } catch (error) {
                     console.error('Error parsing WebSocket message:', error);
                 }
@@ -66,7 +74,7 @@ const Dashboard = () => {
     const renderActiveSection = () => {
         switch (activeSection) {
             case 'whatsapp':
-                return isClientReady ? <WhatsAppGroups /> : <WhatsAppAuth />;
+                return isClientReady ? <WhatsAppGroups /> : <WhatsAppAuth qrCode={qrCode} />;
             case 'lead-buckets':
                 return <LeadBuckets />;
             case 'templates':

@@ -4,31 +4,12 @@ import { FaWhatsapp, FaMobile, FaLink, FaQrcode } from 'react-icons/fa';
 import useWhatsAppStore from '../stores/whatsappStore';
 import useWebSocketStore from '../stores/websocketStore';
 
-const WhatsAppAuth = () => {
-    const [qrCode, setQrCode] = useState('');
+const WhatsAppAuth = ({ qrCode }) => {
     const [status, setStatus] = useState('Connecting to server...');
     const setClientReady = useWhatsAppStore((state) => state.setClientReady);
     const { connect, socket } = useWebSocketStore();
 
-    useEffect(() => {
-        if (socket) {
-            socket.onmessage = (event) => {
-                console.log('Received message:', event.data);
-                try {
-                    const data = JSON.parse(event.data);
-                    if (data.type === 'qr') {
-                        setQrCode(data.qr);
-                        setStatus('QR Code received. Please scan with WhatsApp.');
-                    } else if (data.type === 'authenticated' || data.type === 'whatsapp_ready') {
-                        setStatus('Authenticated successfully!');
-                        setClientReady(true);
-                    }
-                } catch (error) {
-                    console.error('Error parsing WebSocket message:', error);
-                }
-            };
-        }
-    }, [socket, setClientReady]);
+
 
 
     return (
