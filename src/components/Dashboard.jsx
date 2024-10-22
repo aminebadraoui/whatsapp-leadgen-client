@@ -15,8 +15,15 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const setClientReady = useWhatsAppStore((state) => state.setClientReady);
     const isClientReady = useWhatsAppStore((state) => state.isClientReady);
+    const user = useUserStore((state) => state.user);
+
     useEffect(() => {
         const ws = new WebSocket(process.env.REACT_APP_WS_URL);
+
+        ws.onopen = () => {
+            console.log('WebSocket connection opened');
+            ws.send(JSON.stringify({ action: 'initialize', userId: user.id }));
+        };
 
         ws.onmessage = (event) => {
             console.log('Received message:', event.data);
@@ -26,6 +33,10 @@ const Dashboard = () => {
 
                 if (data.type === 'whatsapp_ready') {
                     setClientReady(true);
+                }
+
+                if (data.type === 'whatsapp_not_ready') {
+                    setClientReady(false);
                 }
 
                 if (data.type === 'disconnected') {
