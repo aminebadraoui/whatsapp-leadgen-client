@@ -37,6 +37,7 @@ const AuthPage = () => {
                 // Store the session token
                 localStorage.setItem('token', data.token);
 
+
                 // Set the user in Zustand store
                 setUser(data.user);
 
