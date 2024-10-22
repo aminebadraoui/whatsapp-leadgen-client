@@ -40,6 +40,7 @@ const AuthPage = () => {
 
                 // Set the user in Zustand store
                 setUser(data.user);
+                localStorage.setItem("user", JSON.stringify(data.user));
 
                 setStatus('Authentication successful. Redirecting...');
                 setTimeout(() => navigate('/dashboard'), 2000);
