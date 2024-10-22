@@ -2,60 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { FaWhatsapp, FaMobile, FaLink, FaQrcode } from 'react-icons/fa';
 import useWhatsAppStore from '../stores/whatsappStore';
+import useWebSocketStore from '../stores/websocketStore';
 
 const WhatsAppAuth = () => {
     const [qrCode, setQrCode] = useState('');
     const [status, setStatus] = useState('Connecting to server...');
     const setClientReady = useWhatsAppStore((state) => state.setClientReady);
-
+    const { connect, socket } = useWebSocketStore();
 
     useEffect(() => {
-        console.log('Attempting to connect to WebSocket...');
-        console.log(process.env.REACT_APP_WS_URL);
-        const ws = new WebSocket(process.env.REACT_APP_WS_URL);
-
-        ws.onopen = () => {
-            console.log('WebSocket connection established');
-            setStatus('Connected to server. Waiting for QR code...');
-        };
-
-        ws.onmessage = (event) => {
-            console.log('Received message:', event.data);
-            try {
-                const data = JSON.parse(event.data);
-                if (data.type === 'qr') {
-                    setQrCode(data.qr);
-                    setStatus('QR Code received. Please scan with WhatsApp.');
-                } else if (data.type === 'authenticated') {
-                    setStatus('Authenticated successfully!');
-                    setClientReady(true);
+        if (socket) {
+            socket.onmessage = (event) => {
+                console.log('Received message:', event.data);
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'qr') {
+                        setQrCode(data.qr);
+                        setStatus('QR Code received. Please scan with WhatsApp.');
+                    } else if (data.type === 'authenticated' || data.type === 'whatsapp_ready') {
+                        setStatus('Authenticated successfully!');
+                        setClientReady(true);
+                    }
+                } catch (error) {
+                    console.error('Error parsing WebSocket message:', error);
                 }
-                else if (data.type === 'whatsapp_ready') {
-                    setStatus('Authenticated successfully!');
-                    setClientReady(true);
+            };
+        }
+    }, [socket, setClientReady]);
 
-                }
-            } catch (error) {
-                console.error('Error parsing WebSocket message:', error);
-            }
-        };
-
-        ws.onerror = (error) => {
-            console.error('WebSocket error:', error);
-            setStatus(`Error connecting to server: ${error.message}`);
-        };
-
-        ws.onclose = (event) => {
-            console.log('WebSocket connection closed:', event.code, event.reason);
-            setStatus(`Connection closed: ${event.code} ${event.reason}`);
-        };
-
-        return () => {
-            if (ws.readyState === WebSocket.OPEN) {
-                ws.close();
-            }
-        };
-    }, []);
 
     return (
         <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">

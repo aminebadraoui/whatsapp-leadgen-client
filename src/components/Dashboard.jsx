@@ -7,6 +7,7 @@ import WhatsAppGroups from './WhatsAppGroups';
 import MessageTemplates from './MessageTemplates';
 import LeadBuckets from './LeadBuckets';
 import useWhatsAppStore from '../stores/whatsappStore';
+import useWebSocketStore from '../stores/websocketStore';
 
 
 const Dashboard = () => {
@@ -16,38 +17,46 @@ const Dashboard = () => {
     const setClientReady = useWhatsAppStore((state) => state.setClientReady);
     const isClientReady = useWhatsAppStore((state) => state.isClientReady);
     const user = useUserStore((state) => state.user);
+    const { connect, socket } = useWebSocketStore();
 
     useEffect(() => {
-        const ws = new WebSocket(process.env.REACT_APP_WS_URL);
+        if (user && user.userId) {
+            connect(user.userId);
+        }
+    }, [user, connect]);
 
-        ws.onopen = () => {
-            console.log('WebSocket connection opened');
-            console.log('Sending initialize message with userId:', user.userId);
-            ws.send(JSON.stringify({ action: 'initialize', userId: user.userId }));
-        };
+    useEffect(() => {
+        if (socket) {
+            socket.onopen = () => {
+                console.log('WebSocket connection opened');
+                console.log('Sending initialize message with userId:', user.userId);
+                socket.send(JSON.stringify({ action: 'initialize', userId: user.userId }));
+            };
 
-        ws.onmessage = (event) => {
-            console.log('Received message:', event.data);
+            socket.onmessage = (event) => {
+                console.log('Received message:', event.data);
 
-            try {
-                const data = JSON.parse(event.data);
+                try {
+                    const data = JSON.parse(event.data);
 
-                if (data.type === 'whatsapp_ready') {
-                    setClientReady(true);
+                    if (data.type === 'whatsapp_ready') {
+                        setClientReady(true);
+                    }
+
+                    if (data.type === 'whatsapp_not_ready') {
+                        setClientReady(false);
+                    }
+
+                    if (data.type === 'disconnected') {
+                        setClientReady(false);
+                    }
+                } catch (error) {
+                    console.error('Error parsing WebSocket message:', error);
                 }
+            };
+        }
+    }, [socket, setClientReady]);
 
-                if (data.type === 'whatsapp_not_ready') {
-                    setClientReady(false);
-                }
-
-                if (data.type === 'disconnected') {
-                    setClientReady(false);
-                }
-            } catch (error) {
-                console.error('Error parsing WebSocket message:', error);
-            }
-        };
-    }, []);
     const handleLogout = () => {
         localStorage.removeItem('token');
         clearUser();
