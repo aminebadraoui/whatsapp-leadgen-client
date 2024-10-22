@@ -26,6 +26,7 @@ jobs:
         build-args: |
           REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}
           REACT_APP_WS_URL=${{ secrets.REACT_APP_WS_URL }}
+          REACT_APP_STRIPE_PUBLISHABLE_KEY=${{ secrets.REACT_APP_STRIPE_PUBLISHABLE_KEY }}
 
     - name: Build and push development Docker image
       uses: docker/build-push-action@v4
