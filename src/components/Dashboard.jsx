@@ -22,8 +22,8 @@ const Dashboard = () => {
 
         ws.onopen = () => {
             console.log('WebSocket connection opened');
-            console.log('Sending initialize message with userId:', user.id);
-            ws.send(JSON.stringify({ action: 'initialize', userId: user.id }));
+            console.log('Sending initialize message with userId:', user.userId);
+            ws.send(JSON.stringify({ action: 'initialize', userId: user.userId }));
         };
 
         ws.onmessage = (event) => {
