@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import { useNavigate } from 'react-router-dom';
 import { FaWhatsapp, FaMobile, FaLink, FaQrcode } from 'react-icons/fa';
+import useWhatsAppStore from '../stores/whatsappStore';
 
 const WhatsAppAuth = () => {
     const [qrCode, setQrCode] = useState('');
     const [status, setStatus] = useState('Connecting to server...');
-    const navigate = useNavigate();
+    const setClientReady = useWhatsAppStore((state) => state.setClientReady);
+
 
     useEffect(() => {
         console.log('Attempting to connect to WebSocket...');
@@ -27,11 +28,12 @@ const WhatsAppAuth = () => {
                     setStatus('QR Code received. Please scan with WhatsApp.');
                 } else if (data.type === 'authenticated') {
                     setStatus('Authenticated successfully!');
-                    // Navigate after 2 seconds
+                    setClientReady(true);
                 }
                 else if (data.type === 'whatsapp_ready') {
                     setStatus('Authenticated successfully!');
-                    // Navigate after 2 seconds
+                    setClientReady(true);
+
                 }
             } catch (error) {
                 console.error('Error parsing WebSocket message:', error);
@@ -53,7 +55,7 @@ const WhatsAppAuth = () => {
                 ws.close();
             }
         };
-    }, [navigate]);
+    }, []);
 
     return (
         <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
