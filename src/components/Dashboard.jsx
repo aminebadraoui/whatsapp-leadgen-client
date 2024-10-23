@@ -31,8 +31,13 @@ const Dashboard = () => {
         if (socket) {
             socket.onopen = () => {
                 console.log('WebSocket connection opened');
-                console.log('Sending initialize message with userId:', user.userId);
-                socket.send(JSON.stringify({ action: 'initialize', userId: user.userId }));
+
+                if (!isClientReady) {
+                    console.log('Sending initialize message with userId:', user.userId);
+                    socket.send(JSON.stringify({ action: 'initialize', userId: user.userId }));
+                } else {
+                    console.log('Client is already ready');
+                }
             };
 
             socket.onmessage = (event) => {
