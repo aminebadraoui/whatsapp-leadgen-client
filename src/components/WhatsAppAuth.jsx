@@ -10,8 +10,6 @@ const WhatsAppAuth = ({ qrCode }) => {
     const { connect, socket } = useWebSocketStore();
 
 
-
-
     return (
         <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
             <h2 className="text-2xl font-bold mb-6 text-primary-600">Authenticate Your Whatsapp</h2>

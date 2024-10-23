@@ -1,36 +1,44 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import WhatsAppGroupContacts from './WhatsAppGroupContacts';
+import useWebSocketStore from '../stores/websocketStore';
 
 const WhatsAppGroups = () => {
     const [groups, setGroups] = useState([]);
     const [selectedGroup, setSelectedGroup] = useState(null);
-    const socketRef = useRef(null);
+    const [error, setError] = useState(null);
+
+    const socket = useWebSocketStore(state => state.socket);
+    const sendMessage = useWebSocketStore(state => state.sendMessage);
 
     useEffect(() => {
-        const wsUrl = process.env.REACT_APP_WS_URL;
-        console.log('WebSocket URL:', wsUrl);
-
-        socketRef.current = new WebSocket(wsUrl);
-
-        socketRef.current.onopen = () => {
+        if (socket) {
             console.log('WebSocket connection established');
-            socketRef.current.send(JSON.stringify({ action: 'getGroups' }));
-        };
+            sendMessage({ action: 'getGroups' });
 
-        socketRef.current.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.action === 'groupsReceived') {
-                setGroups(data.groups);
-            }
-        };
+            const handleMessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.action === 'groupsReceived') {
+                    setGroups(data.groups);
+                    setError(null);
+                } else if (data.action === 'error') {
+                    setError(data.message);
+                }
+            };
 
-        return () => {
-            if (socketRef.current) {
-                socketRef.current.close();
-            }
-        };
-    }, []);
+            socket.addEventListener('message', handleMessage);
+
+            return () => {
+                socket.removeEventListener('message', handleMessage);
+            };
+        } else {
+            setError('WebSocket connection not available');
+        }
+    }, [socket, sendMessage]);
+
+    if (error) {
+        return <div className="text-red-500">Error: {error}</div>;
+    }
 
     return (
         <div>
