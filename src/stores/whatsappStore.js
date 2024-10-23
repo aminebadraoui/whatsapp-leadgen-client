@@ -1,8 +1,11 @@
 import { create } from 'zustand';
 
 const useWhatsAppStore = create((set) => ({
-    isClientReady: false,
-    setClientReady: (status) => set({ isClientReady: status }),
+    isClientReady: localStorage.getItem('isClientReady') === 'true',
+    setClientReady: (ready) => {
+        localStorage.setItem('isClientReady', ready);
+        set({ isClientReady: ready });
+    },
 }));
 
 export default useWhatsAppStore;

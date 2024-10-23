@@ -50,25 +50,19 @@ const Dashboard = () => {
                         setClientReady(true);
                     }
 
-                    if (data.type === 'whatsapp_not_ready') {
-                        setClientReady(false);
-                    }
-
-                    if (data.type === 'disconnected') {
+                    if (data.type === 'whatsapp_not_ready' || data.type === 'disconnected') {
                         setClientReady(false);
                     }
 
                     if (data.type === 'qr') {
                         setQrCode(data.qr);
                     }
-
-
                 } catch (error) {
                     console.error('Error parsing WebSocket message:', error);
                 }
             };
         }
-    }, [socket, setClientReady]);
+    }, [socket, setClientReady, isClientReady, user.userId]);
 
     const handleLogout = () => {
         localStorage.removeItem('token');
