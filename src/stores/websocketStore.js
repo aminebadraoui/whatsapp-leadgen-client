@@ -3,12 +3,17 @@ import { create } from 'zustand';
 const useWebSocketStore = create((set, get) => ({
     socket: null,
     connect: (userId) => {
-        const socket = new WebSocket(process.env.REACT_APP_WS_URL);
-        socket.onopen = () => {
+        const { socket } = get();
+        if (socket && (socket.readyState === WebSocket.CONNECTING || socket.readyState === WebSocket.OPEN)) {
+            console.log('WebSocket already connected or connecting');
+            return;
+        }
+        const newSocket = new WebSocket(process.env.REACT_APP_WS_URL);
+        newSocket.onopen = () => {
             console.log('WebSocket connected');
-            socket.send(JSON.stringify({ action: 'initialize', userId }));
+            newSocket.send(JSON.stringify({ action: 'initialize', userId }));
         };
-        set({ socket });
+        set({ socket: newSocket });
     },
     disconnect: () => {
         const { socket } = get();
