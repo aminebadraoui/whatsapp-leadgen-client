@@ -47,9 +47,9 @@ const Dashboard = () => {
                     if (data.type === 'whatsapp_not_ready' || data.type === 'disconnected') {
                         setClientReady(false);
 
-                        setTimeout(() => {
-                            socket.send(JSON.stringify({ action: 'initialize', userId: user.userId }));
-                        }, 5000);
+                        // setTimeout(() => {
+                        //     socket.send(JSON.stringify({ action: 'initialize', userId: user.userId }));
+                        // }, 5000);
                     }
 
                     if (data.type === 'qr') {
