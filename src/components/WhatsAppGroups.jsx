@@ -3,11 +3,13 @@ import { motion } from 'framer-motion';
 import WhatsAppGroupContacts from './WhatsAppGroupContacts';
 import useWebSocketStore from '../stores/websocketStore';
 import useWhatsAppStore from '../stores/whatsappStore';
+import Loader from './Loader';
 
 const WhatsAppGroups = () => {
     const [groups, setGroups] = useState([]);
     const [selectedGroup, setSelectedGroup] = useState(null);
     const [error, setError] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     const socket = useWebSocketStore(state => state.socket);
     const sendMessage = useWebSocketStore(state => state.sendMessage);
@@ -23,7 +25,10 @@ const WhatsAppGroups = () => {
             };
 
             // Add a delay before fetching groups
-            const timer = setTimeout(fetchGroups, 10000);
+            const timer = setTimeout(() => {
+                fetchGroups();
+                setIsLoading(false);
+            }, 10000);
 
             const handleMessage = (event) => {
                 const data = JSON.parse(event.data);
@@ -50,6 +55,10 @@ const WhatsAppGroups = () => {
 
     if (error) {
         return <div className="text-red-500">Error: {error}</div>;
+    }
+
+    if (isLoading) {
+        return <Loader message='Fetching WhatsApp groups...' />;
     }
 
     return (

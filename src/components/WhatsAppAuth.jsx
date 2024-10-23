@@ -4,11 +4,11 @@ import { FaWhatsapp, FaMobile, FaLink, FaQrcode } from 'react-icons/fa';
 import useWhatsAppStore from '../stores/whatsappStore';
 import useWebSocketStore from '../stores/websocketStore';
 
+
 const WhatsAppAuth = ({ qrCode }) => {
     const [status, setStatus] = useState('Connecting to server...');
     const setClientReady = useWhatsAppStore((state) => state.setClientReady);
     const { connect, socket } = useWebSocketStore();
-
 
     return (
         <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
