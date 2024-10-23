@@ -34,17 +34,6 @@ const Dashboard = () => {
         if (!socket) return;
 
         if (socket) {
-            socket.onopen = () => {
-                console.log('WebSocket connection opened');
-
-                if (!isClientReady) {
-                    console.log('Sending initialize message with userId:', user.userId);
-                    socket.send(JSON.stringify({ action: 'initialize', userId: user.userId }));
-                } else {
-                    console.log('Client is already ready');
-                }
-            };
-
             socket.onmessage = (event) => {
                 console.log('Received message:', event.data);
 
@@ -57,7 +46,10 @@ const Dashboard = () => {
 
                     if (data.type === 'whatsapp_not_ready' || data.type === 'disconnected') {
                         setClientReady(false);
-                        socket.send(JSON.stringify({ action: 'initialize', userId: user.userId }));
+
+                        setTimeout(() => {
+                            socket.send(JSON.stringify({ action: 'initialize', userId: user.userId }));
+                        }, 5000);
                     }
 
                     if (data.type === 'qr') {
