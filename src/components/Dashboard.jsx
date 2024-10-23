@@ -40,6 +40,15 @@ const Dashboard = () => {
                 try {
                     const data = JSON.parse(event.data);
 
+                    if (data.action === 'clientStatus') {
+                        console.log('Client status:', data.isReady);
+                        console.log('userId', user.userId);
+
+                        if (!data.isReady) {
+                            socket.send(JSON.stringify({ action: 'initialize', userId: user.userId }));
+                        }
+                    }
+
                     if (data.type === 'whatsapp_ready') {
                         setClientReady(true);
                     }
