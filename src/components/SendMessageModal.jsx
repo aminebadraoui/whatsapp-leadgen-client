@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import useUserStore from '../stores/userStore';
 
 const SendMessageModal = ({ isOpen, onClose, onSend }) => {
+    const user = useUserStore((state) => state.user);
     const [messageTemplates, setMessageTemplates] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [isSending, setIsSending] = useState(false);
@@ -11,7 +13,7 @@ const SendMessageModal = ({ isOpen, onClose, onSend }) => {
 
     const fetchMessageTemplates = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/message-templates`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/message-templates?userId=${user.userId}`);
             const data = await response.json();
             console.log('Fetched message templates:', data);
             setMessageTemplates(data);

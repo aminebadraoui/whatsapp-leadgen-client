@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { FaArrowLeft, FaSearch } from 'react-icons/fa';
 import SendMessageModal from './SendMessageModal';
 import SendMessageProgress from './SendMessageProgress';
+import useUserStore from '../stores/userStore';
 
 const BucketContacts = ({ bucket, onBack }) => {
     const [contacts, setContacts] = useState([]);
@@ -10,6 +11,8 @@ const BucketContacts = ({ bucket, onBack }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isSendMessageModalOpen, setIsSendMessageModalOpen] = useState(false);
     const [sendingProgress, setSendingProgress] = useState(null);
+    const user = useUserStore((state) => state.user);
+
 
     useEffect(() => {
         fetchBucketContacts();
@@ -17,8 +20,8 @@ const BucketContacts = ({ bucket, onBack }) => {
 
     const fetchBucketContacts = async () => {
         try {
-            console.log("fetching bucket contacts", `${process.env.REACT_APP_API_URL}/buckets/${bucket.id}/contacts`);
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/buckets/${bucket.id}/contacts`);
+            console.log("fetching bucket contacts", `${process.env.REACT_APP_API_URL}/buckets/${bucket.id}/contacts?userId=${user.userId}`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/buckets/${bucket.id}/contacts?userId=${user.userId}`);
             const data = await response.json();
             setContacts(data);
         } catch (error) {

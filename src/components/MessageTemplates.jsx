@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import AddTemplateModal from './AddTemplateModal';
 import TemplateDetails from './TemplateDetails';
 import Loader from './Loader';
+import useUserStore from '../stores/userStore';
+
 const MessageTemplates = () => {
     const [templates, setTemplates] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -10,6 +12,7 @@ const MessageTemplates = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isFetchingTemplates, setIsFetchingTemplates] = useState(true);
+    const user = useUserStore((state) => state.user);
 
     useEffect(() => {
         fetchTemplates();
@@ -19,7 +22,7 @@ const MessageTemplates = () => {
         setIsFetchingTemplates(true);
         setError(null);
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/message-templates`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/message-templates?userId=${user.userId}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -35,7 +38,7 @@ const MessageTemplates = () => {
 
     const addTemplate = async (title, message) => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/message-templates`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/message-templates?userId=${user.userId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ title, message }),

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import AddBucketModal from './AddBucketModal';
 import BucketContacts from './BucketContacts';
 import Loader from './Loader';
+import useUserStore from '../stores/userStore';
 
 const LeadBuckets = () => {
     const [buckets, setBuckets] = useState([]);
@@ -11,6 +12,7 @@ const LeadBuckets = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isFetchingBuckets, setIsFetchingBuckets] = useState(true);
+    const user = useUserStore((state) => state.user);
 
     useEffect(() => {
         fetchBuckets();
@@ -20,8 +22,8 @@ const LeadBuckets = () => {
         setIsFetchingBuckets(true);
         setError(null);
         try {
-            console.log("fetching buckets", `${process.env.REACT_APP_API_URL}/buckets`);
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/buckets`);
+            console.log("fetching buckets", `${process.env.REACT_APP_API_URL}/buckets?userId=${user.userId}`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/buckets?userId=${user.userId}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -37,7 +39,7 @@ const LeadBuckets = () => {
 
     const addBucket = async (name) => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/buckets`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/buckets?userId=${user.userId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name }),
