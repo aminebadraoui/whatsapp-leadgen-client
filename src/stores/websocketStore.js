@@ -17,6 +17,8 @@ const useWebSocketStore = create((set, get) => ({
         newSocket.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.action === 'clientStatus') {
+                console.log('Client status:', data.isReady);
+                console.log('userId', userId);
 
                 if (!data.isReady) {
                     newSocket.send(JSON.stringify({ action: 'initialize', userId }));
