@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FaWhatsapp, FaUsers, FaFileAlt, FaSignOutAlt } from 'react-icons/fa';
 import useUserStore from '../stores/userStore';
 import { useNavigate, Link } from 'react-router-dom';
@@ -19,9 +19,12 @@ const Dashboard = () => {
     const user = useUserStore((state) => state.user);
     const { connect, socket } = useWebSocketStore();
 
+    const socketInitialized = useRef(false);
+
     useEffect(() => {
-        if (user && user.userId) {
+        if (user && user.userId && !socketInitialized.current) {
             connect(user.userId);
+            socketInitialized.current = true;
         }
     }, [user, connect]);
 
@@ -52,6 +55,7 @@ const Dashboard = () => {
 
                     if (data.type === 'whatsapp_not_ready' || data.type === 'disconnected') {
                         setClientReady(false);
+                        socket.send(JSON.stringify({ action: 'initialize', userId: user.userId }));
                     }
 
                     if (data.type === 'qr') {
