@@ -11,7 +11,17 @@ const useWebSocketStore = create((set, get) => ({
         const newSocket = new WebSocket(process.env.REACT_APP_WS_URL);
         newSocket.onopen = () => {
             console.log('WebSocket connected');
-            newSocket.send(JSON.stringify({ action: 'initialize', userId }));
+            newSocket.send(JSON.stringify({ action: 'checkClientStatus', userId }));
+        };
+
+        newSocket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.action === 'clientStatus') {
+
+                if (!data.isReady) {
+                    newSocket.send(JSON.stringify({ action: 'initialize', userId }));
+                }
+            }
         };
         set({ socket: newSocket });
     },
