@@ -2,20 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import AddTemplateModal from './AddTemplateModal';
 import TemplateDetails from './TemplateDetails';
-
+import Loader from './Loader';
 const MessageTemplates = () => {
     const [templates, setTemplates] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isFetchingTemplates, setIsFetchingTemplates] = useState(true);
 
     useEffect(() => {
         fetchTemplates();
     }, []);
 
     const fetchTemplates = async () => {
-        setIsLoading(true);
+        setIsFetchingTemplates(true);
         setError(null);
         try {
             const response = await fetch(`${process.env.REACT_APP_API_URL}/message-templates`);
@@ -28,7 +29,7 @@ const MessageTemplates = () => {
             console.error('Error fetching templates:', error);
             setError('Failed to fetch templates. Please try again later.');
         } finally {
-            setIsLoading(false);
+            setIsFetchingTemplates(false);
         }
     };
 
@@ -50,8 +51,8 @@ const MessageTemplates = () => {
         }
     };
 
-    if (isLoading) {
-        return <div>Loading templates...</div>;
+    if (isFetchingTemplates) {
+        return <Loader message='Fetching message templates...' />;
     }
 
     if (error) {

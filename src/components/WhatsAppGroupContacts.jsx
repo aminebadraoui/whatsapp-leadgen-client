@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { FaArrowLeft, FaSearch } from 'react-icons/fa';
 
 import ExportModal from './ExportModal';
+import Loader from './Loader';
 
 const WhatsAppGroupContacts = ({ group, onBack }) => {
     const [contacts, setContacts] = useState([]);
@@ -10,8 +11,8 @@ const WhatsAppGroupContacts = ({ group, onBack }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isExportModalOpen, setIsExportModalOpen] = useState(false);
     const socketRef = useRef(null);
-
-
+    const [isFetchingContacts, setIsFetchingContacts] = useState(true);
+    const [isExportingContacts, setIsExportingContacts] = useState(false);
 
 
     useEffect(() => {
@@ -32,9 +33,11 @@ const WhatsAppGroupContacts = ({ group, onBack }) => {
 
                 if (data.members) {
                     setContacts(data.members);
+                    setIsFetchingContacts(false);
                 } else {
                     console.error("No members received");
                     setContacts([]);
+                    setIsFetchingContacts(false);
                 }
             }
         };
@@ -61,6 +64,7 @@ const WhatsAppGroupContacts = ({ group, onBack }) => {
 
     const handleExport = async (bucketId, selectedContacts, group) => {
         try {
+            setIsExportingContacts(true);
             const response = await fetch(`${process.env.REACT_APP_API_URL}/export`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -79,6 +83,8 @@ const WhatsAppGroupContacts = ({ group, onBack }) => {
                 }),
             });
 
+            setIsExportingContacts(false);
+
             if (!response.ok) {
                 throw new Error('Failed to export contacts');
             }
@@ -88,9 +94,18 @@ const WhatsAppGroupContacts = ({ group, onBack }) => {
             // You can add a success message or update the UI here
         } catch (error) {
             console.error('Error exporting contacts:', error);
+            setIsExportingContacts(false);
             // You can add an error message or update the UI here
         }
     };
+
+    if (isFetchingContacts) {
+        return <Loader message='Fetching WhatsApp group contacts...' />;
+    }
+
+    if (isExportingContacts) {
+        return <Loader message='Exporting WhatsApp group contacts...' />;
+    }
 
     return (
         <div>

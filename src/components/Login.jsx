@@ -10,6 +10,7 @@ const Login = () => {
     const [error, setError] = useState('');
     const [isSubmitted, setIsSubmitted] = useState(false);
     const navigate = useNavigate();
+    const [isSendingMagicLink, setIsSendingMagicLink] = useState(false);
 
     useEffect(() => {
         const user = useUserStore.getState().user;
@@ -21,7 +22,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
+        setIsSendingMagicLink(true);
         setError('');
 
         try {
@@ -43,9 +44,11 @@ const Login = () => {
             setError('An error occurred. Please try again.');
             console.error('Login error:', error);
         } finally {
-            setIsLoading(false);
+            setIsSendingMagicLink(false);
         }
     };
+
+
 
     return (
         <div className="min-h-screen flex flex-col bg-primary-50">
@@ -64,6 +67,8 @@ const Login = () => {
                     transition={{ duration: 0.5 }}
                     className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full"
                 >
+                    {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
+
                     {!isSubmitted ? (
                         <>
                             <motion.h2
@@ -105,6 +110,7 @@ const Login = () => {
                                     className="w-full bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors font-semibold flex items-center justify-center"
                                     whileHover={{ scale: 1.05 }}
                                     whileTap={{ scale: 0.95 }}
+                                    disabled={isSendingMagicLink}
                                 >
                                     Send Magic Link <FaMagic className="ml-2" />
                                 </motion.button>

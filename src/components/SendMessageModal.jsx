@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const SendMessageModal = ({ isOpen, onClose, onSend }) => {
     const [messageTemplates, setMessageTemplates] = useState([]);
     const [selectedTemplate, setSelectedTemplate] = useState(null);
-
+    const [isSending, setIsSending] = useState(false);
     useEffect(() => {
         fetchMessageTemplates();
     }, []);
@@ -22,7 +22,9 @@ const SendMessageModal = ({ isOpen, onClose, onSend }) => {
 
     const handleSend = () => {
         if (selectedTemplate) {
+            setIsSending(true);
             onSend(selectedTemplate);
+            setIsSending(false);
             onClose();
         }
     };
@@ -69,7 +71,7 @@ const SendMessageModal = ({ isOpen, onClose, onSend }) => {
                                 className="bg-primary-500 text-white px-4 py-2 rounded"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                disabled={!selectedTemplate}
+                                disabled={!selectedTemplate || isSending}
                             >
                                 Send
                             </motion.button>

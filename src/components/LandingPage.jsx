@@ -108,9 +108,9 @@ const HowItWorks = () => (
             </motion.h2>
             <div className="grid md:grid-cols-3 gap-8">
                 {[
-                    { title: "Create Lead List", icon: FaClipboardList },
-                    { title: "Import WhatsApp Group Members", icon: FaWhatsapp },
-                    { title: "Reach Out", icon: FaRocket },
+                    { title: "Create Lead List", icon: FaClipboardList, description: "Create a lead list by importing WhatsApp group members." },
+                    { title: "Import WhatsApp Group Members", icon: FaWhatsapp, description: "Import WhatsApp group members to your lead list." },
+                    { title: "Reach Out", icon: FaRocket, description: "Send messages to your leads using custom message templates." },
                 ].map((step, index) => (
                     <motion.div
                         key={index}
@@ -121,7 +121,7 @@ const HowItWorks = () => (
                     >
                         <step.icon className="text-5xl mb-4 text-primary-500 mx-auto" />
                         <h3 className="text-xl font-semibold mb-2 text-primary-600">{step.title}</h3>
-                        <p className="text-primary-700">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                        <p className="text-primary-700"> {step.description}</p>
                     </motion.div>
                 ))}
             </div>
@@ -186,7 +186,7 @@ const Pricing = React.forwardRef((props, ref) => (
                     priceId="price_1QC9ueDLt2qCPKSrCUNf8ggh"
                 />
                 <PricingCard
-                    title="Limited Offer"
+                    title="Give it a try"
                     originalPrice="$40"
                     discountedPrice="$19"
                     features={[

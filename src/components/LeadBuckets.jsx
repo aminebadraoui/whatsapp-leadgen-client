@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import AddBucketModal from './AddBucketModal';
 import BucketContacts from './BucketContacts';
+import Loader from './Loader';
 
 const LeadBuckets = () => {
     const [buckets, setBuckets] = useState([]);
@@ -9,13 +10,14 @@ const LeadBuckets = () => {
     const [selectedBucket, setSelectedBucket] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isFetchingBuckets, setIsFetchingBuckets] = useState(true);
 
     useEffect(() => {
         fetchBuckets();
     }, []);
 
     const fetchBuckets = async () => {
-        setIsLoading(true);
+        setIsFetchingBuckets(true);
         setError(null);
         try {
             console.log("fetching buckets", `${process.env.REACT_APP_API_URL}/buckets`);
@@ -29,7 +31,7 @@ const LeadBuckets = () => {
             console.error('Error fetching buckets:', error);
             setError('Failed to fetch buckets. Please try again later.');
         } finally {
-            setIsLoading(false);
+            setIsFetchingBuckets(false);
         }
     };
 
@@ -51,8 +53,8 @@ const LeadBuckets = () => {
         }
     };
 
-    if (isLoading) {
-        return <div>Loading buckets...</div>;
+    if (isFetchingBuckets) {
+        return <Loader message='Fetching lead buckets...' />;
     }
 
     if (error) {

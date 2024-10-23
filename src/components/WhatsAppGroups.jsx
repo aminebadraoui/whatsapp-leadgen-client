@@ -19,7 +19,8 @@ const WhatsAppGroups = () => {
 
     useEffect(() => {
 
-        if (effectRan.current) return;
+        if (effectRan.current || !socket || !isClientReady) return;
+
         if (socket && isClientReady) {
             console.log('WebSocket connection established and client is ready');
 
