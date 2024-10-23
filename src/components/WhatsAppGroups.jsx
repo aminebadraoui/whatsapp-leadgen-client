@@ -33,7 +33,7 @@ const WhatsAppGroups = () => {
             const timer = setTimeout(() => {
                 fetchGroups();
                 setIsLoading(false);
-            }, 10000);
+            }, 1000);
 
             const handleMessage = (event) => {
                 const data = JSON.parse(event.data);
