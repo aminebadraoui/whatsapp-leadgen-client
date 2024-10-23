@@ -23,7 +23,7 @@ const WhatsAppGroups = () => {
             };
 
             // Add a delay before fetching groups
-            const timer = setTimeout(fetchGroups, 2000);
+            const timer = setTimeout(fetchGroups, 10000);
 
             const handleMessage = (event) => {
                 const data = JSON.parse(event.data);
