@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import WhatsAppGroupContacts from './WhatsAppGroupContacts';
 import useWebSocketStore from '../stores/websocketStore';
+import useWhatsAppStore from '../stores/whatsappStore';
 
 const WhatsAppGroups = () => {
     const [groups, setGroups] = useState([]);
@@ -10,11 +11,19 @@ const WhatsAppGroups = () => {
 
     const socket = useWebSocketStore(state => state.socket);
     const sendMessage = useWebSocketStore(state => state.sendMessage);
+    const isClientReady = useWhatsAppStore(state => state.isClientReady);
 
     useEffect(() => {
-        if (socket) {
-            console.log('WebSocket connection established');
-            sendMessage({ action: 'getGroups' });
+        if (socket && isClientReady) {
+            console.log('WebSocket connection established and client is ready');
+
+            const fetchGroups = () => {
+                console.log('Fetching groups...');
+                sendMessage({ action: 'getGroups' });
+            };
+
+            // Add a delay before fetching groups
+            const timer = setTimeout(fetchGroups, 2000);
 
             const handleMessage = (event) => {
                 const data = JSON.parse(event.data);
@@ -29,12 +38,15 @@ const WhatsAppGroups = () => {
             socket.addEventListener('message', handleMessage);
 
             return () => {
+                clearTimeout(timer);
                 socket.removeEventListener('message', handleMessage);
             };
-        } else {
+        } else if (!isClientReady) {
+            setError('WhatsApp client is not ready');
+        } else if (!socket) {
             setError('WebSocket connection not available');
         }
-    }, [socket, sendMessage]);
+    }, [socket, sendMessage, isClientReady]);
 
     if (error) {
         return <div className="text-red-500">Error: {error}</div>;
