@@ -31,6 +31,8 @@ const Dashboard = () => {
     const [qrCode, setQrCode] = useState('');
 
     useEffect(() => {
+        if (!socket) return;
+
         if (socket) {
             socket.onopen = () => {
                 console.log('WebSocket connection opened');
