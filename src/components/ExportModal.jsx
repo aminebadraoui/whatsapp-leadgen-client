@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import useUserStore from '../stores/userStore';
 
 const ExportModal = ({ isOpen, onClose, onExport, selectedContacts, group }) => {
     const [buckets, setBuckets] = useState([]);
     const [selectedBucket, setSelectedBucket] = useState('');
+    const user = useUserStore((state) => state.user);
+
 
     useEffect(() => {
         fetchBuckets();
@@ -11,7 +14,7 @@ const ExportModal = ({ isOpen, onClose, onExport, selectedContacts, group }) => 
 
     const fetchBuckets = async () => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/buckets`);
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/buckets?userId=${user.userId}`);
             const data = await response.json();
             setBuckets(data);
         } catch (error) {
