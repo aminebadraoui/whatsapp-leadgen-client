@@ -4,6 +4,8 @@ import { FaArrowLeft, FaSearch } from 'react-icons/fa';
 import SendMessageModal from './SendMessageModal';
 import SendMessageProgress from './SendMessageProgress';
 import useUserStore from '../stores/userStore';
+import useModalStore from '../stores/modalStore';
+import Loader from './Loader';
 
 const BucketContacts = ({ bucket, onBack }) => {
     const [contacts, setContacts] = useState([]);
@@ -11,9 +13,12 @@ const BucketContacts = ({ bucket, onBack }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [isSendMessageModalOpen, setIsSendMessageModalOpen] = useState(false);
     const [sendingProgress, setSendingProgress] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+
     const user = useUserStore((state) => state.user);
     const purchases = useUserStore((state) => state.purchases);
     const fetchUserPurchases = useUserStore((state) => state.fetchUserPurchases);
+    const showUpgradeModal = useModalStore((state) => state.showUpgradeModal);
 
 
 
@@ -156,6 +161,10 @@ const BucketContacts = ({ bucket, onBack }) => {
             console.log('WebSocket connection closed');
         };
     };
+
+    if (isLoading) {
+        return <Loader />;
+    }
 
     return (
         <div className="p-6">

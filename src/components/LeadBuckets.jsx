@@ -4,6 +4,7 @@ import AddBucketModal from './AddBucketModal';
 import BucketContacts from './BucketContacts';
 import Loader from './Loader';
 import useUserStore from '../stores/userStore';
+import useModalStore from '../stores/modalStore';
 
 const LeadBuckets = () => {
     const [buckets, setBuckets] = useState([]);
@@ -15,6 +16,7 @@ const LeadBuckets = () => {
     const user = useUserStore((state) => state.user);
     const fetchUserPurchases = useUserStore((state) => state.fetchUserPurchases);
     const purchases = useUserStore((state) => state.purchases);
+    const showUpgradeModal = useModalStore((state) => state.showUpgradeModal);
 
     useEffect(() => {
         const fetchData = async () => {

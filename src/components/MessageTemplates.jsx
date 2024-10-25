@@ -4,6 +4,7 @@ import AddTemplateModal from './AddTemplateModal';
 import TemplateDetails from './TemplateDetails';
 import Loader from './Loader';
 import useUserStore from '../stores/userStore';
+import useModalStore from '../stores/modalStore';
 
 const MessageTemplates = () => {
     const [templates, setTemplates] = useState([]);
@@ -15,6 +16,7 @@ const MessageTemplates = () => {
     const user = useUserStore((state) => state.user);
     const purchases = useUserStore((state) => state.purchases);
     const fetchUserPurchases = useUserStore((state) => state.fetchUserPurchases);
+    const showUpgradeModal = useModalStore((state) => state.showUpgradeModal);
 
     useEffect(() => {
         const fetchData = async () => {

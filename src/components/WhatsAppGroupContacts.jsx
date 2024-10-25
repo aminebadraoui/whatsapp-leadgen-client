@@ -4,6 +4,8 @@ import { FaArrowLeft, FaSearch } from 'react-icons/fa';
 
 import ExportModal from './ExportModal';
 import Loader from './Loader';
+import useUserStore from '../stores/userStore';
+import useModalStore from '../stores/modalStore';
 
 const WhatsAppGroupContacts = ({ group, onBack }) => {
     const [contacts, setContacts] = useState([]);
@@ -13,9 +15,17 @@ const WhatsAppGroupContacts = ({ group, onBack }) => {
     const socketRef = useRef(null);
     const [isFetchingContacts, setIsFetchingContacts] = useState(true);
     const [isExportingContacts, setIsExportingContacts] = useState(false);
-
+    const purchases = useUserStore((state) => state.purchases);
+    const showUpgradeModal = useModalStore((state) => state.showUpgradeModal);
+    const fetchUserPurchases = useUserStore((state) => state.fetchUserPurchases);
+    const user = useUserStore((state) => state.user);
 
     useEffect(() => {
+        fetchUserPurchases(user.userId);
+    }, []);
+
+    useEffect(() => {
+
         const wsUrl = process.env.REACT_APP_WS_URL;
         console.log('WebSocket URL:', wsUrl);
         socketRef.current = new WebSocket(wsUrl);
@@ -83,9 +93,7 @@ const WhatsAppGroupContacts = ({ group, onBack }) => {
                     showUpgradeModal();
                     return;
                 }
-
             }
-
 
 
             setIsExportingContacts(true);
