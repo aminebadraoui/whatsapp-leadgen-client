@@ -10,9 +10,8 @@ const WhatsAppGroups = () => {
     const [selectedGroup, setSelectedGroup] = useState(null);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const socketRef = useRef(null);
 
-    const socket = useWebSocketStore(state => state.socket);
-    const sendMessage = useWebSocketStore(state => state.sendMessage);
     const isClientReady = useWhatsAppStore(state => state.isClientReady);
 
     const effectRan = useRef(false);
@@ -20,12 +19,18 @@ const WhatsAppGroups = () => {
     useEffect(() => {
 
         if (effectRan.current) return;
-        if (socket && isClientReady) {
+        if (isClientReady) {
             console.log('WebSocket connection established and client is ready');
 
             const fetchGroups = () => {
-                console.log('Fetching groups...');
-                sendMessage({ action: 'getGroups' });
+                const wsUrl = process.env.REACT_APP_WS_URL;
+                console.log('WebSocket URL:', wsUrl);
+                socketRef.current = new WebSocket(wsUrl);
+
+                socketRef.current.onopen = () => {
+                    console.log('WebSocket connection established');
+                    socketRef.current.send(JSON.stringify({ action: 'getGroups' }));
+                };
             };
 
             // Add a delay before fetching groups
@@ -44,19 +49,19 @@ const WhatsAppGroups = () => {
                 }
             };
 
-            socket.addEventListener('message', handleMessage);
+            socketRef.current.addEventListener('message', handleMessage);
 
             effectRan.current = true;
             return () => {
                 clearTimeout(timer);
-                socket.removeEventListener('message', handleMessage);
+                if (socketRef.current) {
+                    socketRef.current.close();
+                }
             };
         } else if (!isClientReady) {
             setError('WhatsApp client is not ready');
-        } else if (!socket) {
-            setError('WebSocket connection not available');
         }
-    }, [socket, sendMessage, isClientReady]);
+    }, [isClientReady]);
 
     if (error) {
         return <div className="text-red-500">Error: {error}</div>;
