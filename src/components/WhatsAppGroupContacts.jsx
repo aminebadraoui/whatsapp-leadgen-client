@@ -80,7 +80,7 @@ const WhatsAppGroupContacts = ({ group, onBack }) => {
             if (!hasFullVersion) {
                 console.log('User does not have full version');
                 // get contacts from bucketId
-                const bucketContacts = await fetch(`${process.env.REACT_APP_API_URL}/buckets/${bucketId}`);
+                const bucketContacts = await fetch(`${process.env.REACT_APP_API_URL}/buckets/${bucketId}/contacts`);
                 console.log('Bucket contacts:', bucketContacts);
 
                 // get the count of contacts in the bucket
