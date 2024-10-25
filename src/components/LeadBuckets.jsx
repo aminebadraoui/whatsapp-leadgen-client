@@ -48,6 +48,13 @@ const LeadBuckets = () => {
     };
 
     const addBucket = async (name) => {
+        console.log('Adding bucket');
+        console.log('Buckets:', buckets);
+        const hasFullVersion = purchases.some(purchase => purchase.productId === `${process.env.REACT_APP_FULL_VERSION_PRODUCT_ID}`);
+        if (!hasFullVersion && buckets.length >= 1) {
+            showUpgradeModal();
+            return;
+        }
         try {
             console.log('Adding bucket');
 
