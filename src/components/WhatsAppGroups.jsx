@@ -15,7 +15,11 @@ const WhatsAppGroups = () => {
     const sendMessage = useWebSocketStore(state => state.sendMessage);
     const isClientReady = useWhatsAppStore(state => state.isClientReady);
 
+    const effectRan = useRef(false);
+
     useEffect(() => {
+
+        if (effectRan.current) return;
         if (socket && isClientReady) {
             console.log('WebSocket connection established and client is ready');
 
@@ -42,6 +46,7 @@ const WhatsAppGroups = () => {
 
             socket.addEventListener('message', handleMessage);
 
+            effectRan.current = true;
             return () => {
                 clearTimeout(timer);
                 socket.removeEventListener('message', handleMessage);
