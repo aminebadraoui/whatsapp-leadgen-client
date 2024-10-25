@@ -64,6 +64,30 @@ const WhatsAppGroupContacts = ({ group, onBack }) => {
 
     const handleExport = async (bucketId, selectedContacts, group) => {
         try {
+
+            // check if user has full version
+            const hasFullVersion = purchases.some(purchase => purchase.productId === `${process.env.REACT_APP_FULL_VERSION_PRODUCT_ID}`);
+            if (!hasFullVersion) {
+                console.log('User does not have full version');
+                // get contacts from bucketId
+                const bucketContacts = await fetch(`${process.env.REACT_APP_API_URL}/buckets/${bucketId}`);
+                console.log('Bucket contacts:', bucketContacts);
+
+                // get the count of contacts in the bucket
+                const bucketContactsCount = bucketContacts.length;
+                console.log('Bucket contacts count:', bucketContactsCount);
+
+                // check if the number of selectedContacts plus the number of bucket contacts is greater than 50
+                if (selectedContacts.length + bucketContactsCount > 50) {
+                    console.log('Showing upgrade modal');
+                    showUpgradeModal();
+                    return;
+                }
+
+            }
+
+
+
             setIsExportingContacts(true);
             const response = await fetch(`${process.env.REACT_APP_API_URL}/export`, {
                 method: 'POST',

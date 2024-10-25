@@ -14,12 +14,14 @@ const useUserStore = create((set) => ({
         }
     },
     fetchUserPurchases: async (userId) => {
+        console.log('Fetching user purchases');
         try {
             const response = await fetch(`${process.env.REACT_APP_API_URL}/purchases?userId=${userId}`);
             if (!response.ok) {
                 throw new Error('Failed to fetch purchases');
             }
             const data = await response.json();
+            console.log('Fetched purchases:', data);
             set({ purchases: data }); // Set the fetched purchases
         } catch (error) {
             console.error('Error fetching user purchases:', error);

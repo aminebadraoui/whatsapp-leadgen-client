@@ -18,8 +18,10 @@ const LeadBuckets = () => {
 
     useEffect(() => {
         const fetchData = async () => {
+            setIsLoading(true);
             await fetchUserPurchases(user.userId); // Fetch purchases
-            fetchBuckets(); // Fetch buckets
+            await fetchBuckets(); // Fetch buckets
+            setIsLoading(false);
         };
         fetchData();
     }, [user.userId]);
@@ -45,8 +47,12 @@ const LeadBuckets = () => {
 
     const addBucket = async (name) => {
         try {
+            console.log('Adding bucket');
+
+            console.log('Purchases:', purchases);
             const hasFullVersion = purchases.some(purchase => purchase.productId === `${process.env.REACT_APP_FULL_VERSION_PRODUCT_ID}`);
             if (!hasFullVersion && buckets.length >= 1) {
+                console.log('Showing upgrade modal');
                 showUpgradeModal();
                 return;
             }
