@@ -22,10 +22,21 @@ const WhatsAppGroups = () => {
         if (isClientReady) {
             console.log('WebSocket connection established and client is ready');
 
+            const handleMessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.action === 'groupsReceived') {
+                    setGroups(data.groups);
+                    setError(null);
+                } else if (data.action === 'error') {
+                    setError(data.message);
+                }
+            };
             const fetchGroups = () => {
                 const wsUrl = process.env.REACT_APP_WS_URL;
                 console.log('WebSocket URL:', wsUrl);
                 socketRef.current = new WebSocket(wsUrl);
+
+                socketRef.current.addEventListener('message', handleMessage);
 
                 socketRef.current.onopen = () => {
                     console.log('WebSocket connection established');
@@ -39,17 +50,9 @@ const WhatsAppGroups = () => {
                 setIsLoading(false);
             }, 10000);
 
-            const handleMessage = (event) => {
-                const data = JSON.parse(event.data);
-                if (data.action === 'groupsReceived') {
-                    setGroups(data.groups);
-                    setError(null);
-                } else if (data.action === 'error') {
-                    setError(data.message);
-                }
-            };
 
-            socketRef.current.addEventListener('message', handleMessage);
+
+
 
             effectRan.current = true;
             return () => {
