@@ -1,10 +1,11 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import useModalStore from '../stores/modalStore';
-import { stripePromise } from '../utils/stripe';
+import { loadStripe } from '@stripe/stripe-js';
 
 const UpgradeModal = () => {
     const { isUpgradeModalOpen, hideUpgradeModal } = useModalStore();
+    const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
 
     const handleUpgrade = async () => {
         try {
