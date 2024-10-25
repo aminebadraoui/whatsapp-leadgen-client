@@ -206,6 +206,7 @@ const Pricing = React.forwardRef((props, ref) => (
 
 const PricingCard = ({ title, originalPrice, discountedPrice, features, highlighted = false, delay, priceId }) => {
 
+    console.log('Price ID:', priceId);
     const handleGetStarted = async () => {
         try {
             const stripe = await stripePromise;
