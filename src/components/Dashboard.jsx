@@ -8,6 +8,7 @@ import MessageTemplates from './MessageTemplates';
 import LeadBuckets from './LeadBuckets';
 import useWhatsAppStore from '../stores/whatsappStore';
 import useWebSocketStore from '../stores/websocketStore';
+import UpgradeModal from './UpgradeModal';
 
 
 const Dashboard = () => {
@@ -148,6 +149,8 @@ const Dashboard = () => {
                     {renderActiveSection()}
                 </div>
             </main>
+
+            <UpgradeModal />
         </div>
     );
 };

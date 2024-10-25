@@ -27,6 +27,11 @@ jobs:
           REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }}
           REACT_APP_WS_URL=${{ secrets.REACT_APP_WS_URL }}
           REACT_APP_STRIPE_PUBLISHABLE_KEY=${{ secrets.REACT_APP_STRIPE_PUBLISHABLE_KEY }}
+          REACT_APP_FULL_VERSION_PRICE_ID=${{ secrets.REACT_APP_FULL_VERSION_PRICE_ID }}
+          REACT_APP_TRIAL_VERSION_PRICE_ID=${{ secrets.REACT_APP_TRIAL_VERSION_PRICE_ID }}
+          REACT_APP_FULL_VERSION_PRODUCT_ID=${{ secrets.REACT_APP_FULL_VERSION_PRODUCT_ID }}
+          REACT_APP_TRIAL_VERSION_PRODUCT_ID=${{ secrets.REACT_APP_TRIAL_VERSION_PRODUCT_ID }}
+          
 
     - name: Build and push development Docker image
       uses: docker/build-push-action@v4

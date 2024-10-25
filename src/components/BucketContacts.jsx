@@ -12,10 +12,20 @@ const BucketContacts = ({ bucket, onBack }) => {
     const [isSendMessageModalOpen, setIsSendMessageModalOpen] = useState(false);
     const [sendingProgress, setSendingProgress] = useState(null);
     const user = useUserStore((state) => state.user);
+    const purchases = useUserStore((state) => state.purchases);
+    const fetchUserPurchases = useUserStore((state) => state.fetchUserPurchases);
+
 
 
     useEffect(() => {
-        fetchBucketContacts();
+        const fetchData = async () => {
+            setIsLoading(true);
+            await fetchUserPurchases(user.userId);
+            await fetchBucketContacts();
+            setIsLoading(false);
+        };
+
+        fetchData();
     }, [bucket.id]);
 
     const fetchBucketContacts = async () => {
@@ -29,12 +39,40 @@ const BucketContacts = ({ bucket, onBack }) => {
         }
     };
 
+    useEffect(() => {
+        const hasFullVersion = purchases.some(purchase => purchase.productId === `${process.env.REACT_APP_FULL_VERSION_PRODUCT_ID}`);
+        if (!hasFullVersion && selectedContacts.length === 50) {
+            showUpgradeModal();
+        }
+    }, [selectedContacts, user.productType]);
+
     const toggleContact = (contactId) => {
-        setSelectedContacts(prev =>
-            prev.includes(contactId)
-                ? prev.filter(id => id !== contactId)
-                : [...prev, contactId]
-        );
+        const hasFullVersion = purchases.some(purchase => purchase.productId === `${process.env.REACT_APP_FULL_VERSION_PRODUCT_ID}`);
+        if (!hasFullVersion) {
+            setSelectedContacts(prev => {
+                if (prev.includes(contactId)) {
+                    return prev.filter(id => id !== contactId);
+                } else if (prev.length < 50) {
+                    return [...prev, contactId];
+                }
+                return prev;
+            });
+        } else {
+            setSelectedContacts(prev =>
+                prev.includes(contactId)
+                    ? prev.filter(id => id !== contactId)
+                    : [...prev, contactId]
+            );
+        }
+    };
+
+    const selectAll = () => {
+        const hasFullVersion = purchases.some(purchase => purchase.productId === `${process.env.REACT_APP_FULL_VERSION_PRODUCT_ID}`);
+        if (!hasFullVersion) {
+            setSelectedContacts(contacts.slice(0, 50).map(c => c.id));
+        } else {
+            setSelectedContacts(contacts.map(c => c.id));
+        }
     };
 
     const filteredContacts = contacts.filter(contact =>
@@ -86,7 +124,7 @@ const BucketContacts = ({ bucket, onBack }) => {
                 const contact = contacts.find(c => c.id === selectedContacts[index]);
 
                 console.log("contact", contact);
-                const delay = Math.floor(Math.random() * (60000 - 30000 + 1) + 30000);
+                const delay = index === 0 ? 0 : Math.floor(Math.random() * (60000 - 30000 + 1) + 30000);
                 console.log('Delay:', delay);
                 setTimeout(() => {
                     ws.send(JSON.stringify({
@@ -145,7 +183,7 @@ const BucketContacts = ({ bucket, onBack }) => {
                     className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={() => setSelectedContacts(contacts.map(c => c.id))}
+                    onClick={selectAll}
                 >
                     Select All
                 </motion.button>

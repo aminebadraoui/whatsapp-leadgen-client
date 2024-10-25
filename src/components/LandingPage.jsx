@@ -183,7 +183,7 @@ const Pricing = React.forwardRef((props, ref) => (
                     ]}
                     highlighted={true}
                     delay={0.4}
-                    priceId="price_1QC9ueDLt2qCPKSrCUNf8ggh"
+                    priceId={process.env.REACT_APP_FULL_VERSION_PRICE_ID}
                 />
                 <PricingCard
                     title="Give it a try"
@@ -196,7 +196,7 @@ const Pricing = React.forwardRef((props, ref) => (
                         "Perfect for trying out the app"
                     ]}
                     delay={0.2}
-                    priceId="price_1QC9uFDLt2qCPKSrQY7mkijU"
+                    priceId={process.env.REACT_APP_TRIAL_VERSION_PRICE_ID}
                 />
 
             </div>

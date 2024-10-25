@@ -13,10 +13,16 @@ const LeadBuckets = () => {
     const [error, setError] = useState(null);
     const [isFetchingBuckets, setIsFetchingBuckets] = useState(true);
     const user = useUserStore((state) => state.user);
+    const fetchUserPurchases = useUserStore((state) => state.fetchUserPurchases);
+    const purchases = useUserStore((state) => state.purchases);
 
     useEffect(() => {
-        fetchBuckets();
-    }, []);
+        const fetchData = async () => {
+            await fetchUserPurchases(user.userId); // Fetch purchases
+            fetchBuckets(); // Fetch buckets
+        };
+        fetchData();
+    }, [user.userId]);
 
     const fetchBuckets = async () => {
         setIsFetchingBuckets(true);
@@ -39,6 +45,13 @@ const LeadBuckets = () => {
 
     const addBucket = async (name) => {
         try {
+            const hasFullVersion = purchases.some(purchase => purchase.productId === `${process.env.REACT_APP_FULL_VERSION_PRODUCT_ID}`);
+            if (!hasFullVersion && buckets.length >= 1) {
+                showUpgradeModal();
+                return;
+            }
+
+            setIsLoading(true);
             const response = await fetch(`${process.env.REACT_APP_API_URL}/buckets?userId=${user.userId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -52,8 +65,14 @@ const LeadBuckets = () => {
         } catch (error) {
             console.error('Error adding bucket:', error);
             setError('Failed to add bucket. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
+
+    if (isLoading) {
+        return <Loader />;
+    }
 
     if (isFetchingBuckets) {
         return <Loader message='Fetching lead buckets...' />;

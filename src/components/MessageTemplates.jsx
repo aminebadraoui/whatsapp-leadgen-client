@@ -13,13 +13,20 @@ const MessageTemplates = () => {
     const [error, setError] = useState(null);
     const [isFetchingTemplates, setIsFetchingTemplates] = useState(true);
     const user = useUserStore((state) => state.user);
+    const purchases = useUserStore((state) => state.purchases);
+    const fetchUserPurchases = useUserStore((state) => state.fetchUserPurchases);
 
     useEffect(() => {
-        fetchTemplates();
+        const fetchData = async () => {
+            setIsFetchingTemplates(true);
+            await fetchUserPurchases(user.userId);
+            await fetchTemplates();
+            setIsFetchingTemplates(false);
+        };
+        fetchData();
     }, []);
 
     const fetchTemplates = async () => {
-        setIsFetchingTemplates(true);
         setError(null);
         try {
             const response = await fetch(`${process.env.REACT_APP_API_URL}/message-templates?userId=${user.userId}`);
@@ -31,13 +38,18 @@ const MessageTemplates = () => {
         } catch (error) {
             console.error('Error fetching templates:', error);
             setError('Failed to fetch templates. Please try again later.');
-        } finally {
-            setIsFetchingTemplates(false);
         }
     };
 
     const addTemplate = async (title, message) => {
+        const hasFullVersion = purchases.some(purchase => purchase.productId === `${process.env.REACT_APP_FULL_VERSION_PRODUCT_ID}`);
+        if (!hasFullVersion && templates.length >= 1) {
+            showUpgradeModal();
+            return;
+        }
+
         try {
+            setIsLoading(true);
             const response = await fetch(`${process.env.REACT_APP_API_URL}/message-templates?userId=${user.userId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -51,11 +63,17 @@ const MessageTemplates = () => {
         } catch (error) {
             console.error('Error adding template:', error);
             setError('Failed to add template. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
     if (isFetchingTemplates) {
         return <Loader message='Fetching message templates...' />;
+    }
+
+    if (isLoading) {
+        return <Loader />;
     }
 
     if (error) {
